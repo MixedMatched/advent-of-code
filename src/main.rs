@@ -1,8 +1,12 @@
+#![feature(exclusive_range_pattern)]
+
 fn main() {
     day1_a();
     day1_b();
     day2_a();
     day2_b();
+    day3_a();
+    day3_b();
 }
 
 fn day1_a() {
@@ -231,4 +235,53 @@ fn day2_b() {
     }
 
     println!("Day 2, part b: {}", score);
+}
+
+fn day3_a() {
+    let input = include_str!("../input/day3.txt");
+
+    let mut total = 0;
+    for line in input.lines() {
+        let first_half = &line[0..line.len()/2];
+        let second_half = &line[line.len()/2..line.len()];
+
+        'top: for a in first_half.chars() {
+            for b in second_half.chars() {
+                if a == b {
+                    total += match a {
+                        'a'..='z' => a as u32 - 96,
+                        'A'..='Z' => a as u32 - 64 + 26,
+                        _ => panic!("Invalid character: {}", a),
+                    };
+                    break 'top;
+                }
+            }
+        }
+    }
+
+    println!("Day 3, part a: {}", total);
+}
+
+fn day3_b() {
+    let input = include_str!("../input/day3.txt");
+
+    let mut total = 0;
+    for ((line1, line2), line3) in input.lines().step_by(3).zip(input.lines().skip(1).step_by(3)).zip(input.lines().skip(2).step_by(3)) {
+        'top: for a in line1.chars() {
+            for b in line2.chars() {
+                for c in line3.chars() {
+                    if a == b && b == c {
+                        total += match a {
+                            'a'..='z' => a as u32 - 96,
+                            'A'..='Z' => a as u32 - 64 + 26,
+                            _ => panic!("Invalid character: {}", a),
+                        };
+                        break 'top;
+                    }
+                }
+            }
+        }
+    }
+
+    println!("Day 3, part b: {}", total);
 }

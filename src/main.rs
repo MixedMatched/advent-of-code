@@ -1,5 +1,7 @@
 #![feature(exclusive_range_pattern)]
 
+use std::cmp::Ordering;
+
 fn main() {
     day1_a();
     day1_b();
@@ -7,6 +9,8 @@ fn main() {
     day2_b();
     day3_a();
     day3_b();
+    day4_a();
+    day4_b();
 }
 
 fn day1_a() {
@@ -284,4 +288,52 @@ fn day3_b() {
     }
 
     println!("Day 3, part b: {}", total);
+}
+
+fn day4_a(){
+    let input = include_str!("../input/day4.txt");
+
+    let mut total = 0;
+    for line in input.lines() {
+        let (first_elf, second_elf) = line.split_once(",").unwrap();
+
+        let (first_elf_begin, first_elf_end) = first_elf.split_once("-").unwrap();
+        let (second_elf_begin, second_elf_end) = second_elf.split_once("-").unwrap();
+
+        let first_elf_begin = first_elf_begin.parse::<u32>().unwrap();
+        let first_elf_end = first_elf_end.parse::<u32>().unwrap();
+        let second_elf_begin = second_elf_begin.parse::<u32>().unwrap();
+        let second_elf_end = second_elf_end.parse::<u32>().unwrap();
+
+        match (first_elf_begin.cmp(&second_elf_begin), first_elf_end.cmp(&second_elf_end)) {
+            (Ordering::Less, Ordering::Less)
+            | (Ordering::Greater, Ordering::Greater) => (),
+            _ => total += 1,
+        }
+    }
+
+    println!("Day 4, part a: {}", total);
+}
+
+fn day4_b(){
+    let input = include_str!("../input/day4.txt");
+
+    let mut total = 0;
+    for line in input.lines() {
+        let (first_elf, second_elf) = line.split_once(",").unwrap();
+
+        let (first_elf_begin, first_elf_end) = first_elf.split_once("-").unwrap();
+        let (second_elf_begin, second_elf_end) = second_elf.split_once("-").unwrap();
+
+        let first_elf_begin = first_elf_begin.parse::<u32>().unwrap();
+        let first_elf_end = first_elf_end.parse::<u32>().unwrap();
+        let second_elf_begin = second_elf_begin.parse::<u32>().unwrap();
+        let second_elf_end = second_elf_end.parse::<u32>().unwrap();
+
+        if !(first_elf_end < second_elf_begin || second_elf_end < first_elf_begin) {
+            total += 1;
+        }
+    }
+
+    println!("Day 4, part a: {}", total);
 }

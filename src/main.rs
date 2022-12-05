@@ -11,6 +11,8 @@ fn main() {
     day3_b();
     day4_a();
     day4_b();
+    day5_a();
+    day5_b();
 }
 
 fn day1_a() {
@@ -246,8 +248,8 @@ fn day3_a() {
 
     let mut total = 0;
     for line in input.lines() {
-        let first_half = &line[0..line.len()/2];
-        let second_half = &line[line.len()/2..line.len()];
+        let first_half = &line[0..line.len() / 2];
+        let second_half = &line[line.len() / 2..line.len()];
 
         'top: for a in first_half.chars() {
             for b in second_half.chars() {
@@ -270,7 +272,12 @@ fn day3_b() {
     let input = include_str!("../input/day3.txt");
 
     let mut total = 0;
-    for ((line1, line2), line3) in input.lines().step_by(3).zip(input.lines().skip(1).step_by(3)).zip(input.lines().skip(2).step_by(3)) {
+    for ((line1, line2), line3) in input
+        .lines()
+        .step_by(3)
+        .zip(input.lines().skip(1).step_by(3))
+        .zip(input.lines().skip(2).step_by(3))
+    {
         'top: for a in line1.chars() {
             for b in line2.chars() {
                 for c in line3.chars() {
@@ -290,7 +297,7 @@ fn day3_b() {
     println!("Day 3, part b: {}", total);
 }
 
-fn day4_a(){
+fn day4_a() {
     let input = include_str!("../input/day4.txt");
 
     let mut total = 0;
@@ -305,9 +312,11 @@ fn day4_a(){
         let second_elf_begin = second_elf_begin.parse::<u32>().unwrap();
         let second_elf_end = second_elf_end.parse::<u32>().unwrap();
 
-        match (first_elf_begin.cmp(&second_elf_begin), first_elf_end.cmp(&second_elf_end)) {
-            (Ordering::Less, Ordering::Less)
-            | (Ordering::Greater, Ordering::Greater) => (),
+        match (
+            first_elf_begin.cmp(&second_elf_begin),
+            first_elf_end.cmp(&second_elf_end),
+        ) {
+            (Ordering::Less, Ordering::Less) | (Ordering::Greater, Ordering::Greater) => (),
             _ => total += 1,
         }
     }
@@ -315,7 +324,7 @@ fn day4_a(){
     println!("Day 4, part a: {}", total);
 }
 
-fn day4_b(){
+fn day4_b() {
     let input = include_str!("../input/day4.txt");
 
     let mut total = 0;
@@ -335,5 +344,118 @@ fn day4_b(){
         }
     }
 
-    println!("Day 4, part a: {}", total);
+    println!("Day 4, part b: {}", total);
+}
+
+fn day5_a() {
+    let input = include_str!("../input/day5.txt");
+    let num_stacks = (input.split_once("\n").unwrap().0.len() - 3) / 4 + 1;
+
+    let mut stacks: Vec<Vec<char>> = Vec::new();
+    for _ in 0..num_stacks {
+        stacks.push(Vec::new());
+    }
+
+    // create an interator from the input that ends after the first newline
+    let (setup_lines, instruction_lines) = input.split_once("\n\n").unwrap();
+    let binding = setup_lines
+        .replace("[", "")
+        .replace("] ", "")
+        .replace("]", "")
+        .replace("    ", "/")
+        .replace("   ", "/");
+    let mut setup_lines: Vec<&str> = binding.split("\n").collect();
+    setup_lines.pop();
+    setup_lines.reverse();
+
+    for line in setup_lines {
+        for (i, c) in line.chars().enumerate() {
+            if c != '/' {
+                stacks[i].push(c);
+            }
+        }
+    }
+
+    let binding = instruction_lines
+        .replace("move ", "")
+        .replace(" from ", ":")
+        .replace(" to ", ">");
+
+    for line in binding.lines() {
+        let (amount, indices) = line.split_once(":").unwrap();
+        let (from, to) = indices.split_once(">").unwrap();
+
+        let amount = amount.parse::<usize>().unwrap();
+        let from = from.parse::<usize>().unwrap();
+        let to = to.parse::<usize>().unwrap();
+
+        for _ in 0..amount {
+            let take = stacks[from - 1].pop().unwrap();
+            stacks[to - 1].push(take);
+        }
+    }
+
+    println!(
+        "Day 5, part a: {}",
+        stacks.into_iter().fold(String::new(), |acc, stack| acc
+            + &stack.last().unwrap().to_string())
+    );
+}
+
+fn day5_b() {
+    let input = include_str!("../input/day5.txt");
+    let num_stacks = (input.split_once("\n").unwrap().0.len() - 3) / 4 + 1;
+
+    let mut stacks: Vec<Vec<char>> = Vec::new();
+    for _ in 0..num_stacks {
+        stacks.push(Vec::new());
+    }
+
+    // create an interator from the input that ends after the first newline
+    let (setup_lines, instruction_lines) = input.split_once("\n\n").unwrap();
+    let binding = setup_lines
+        .replace("[", "")
+        .replace("] ", "")
+        .replace("]", "")
+        .replace("    ", "/")
+        .replace("   ", "/");
+    let mut setup_lines: Vec<&str> = binding.split("\n").collect();
+    setup_lines.pop();
+    setup_lines.reverse();
+
+    for line in setup_lines {
+        for (i, c) in line.chars().enumerate() {
+            if c != '/' {
+                stacks[i].push(c);
+            }
+        }
+    }
+
+    let binding = instruction_lines
+        .replace("move ", "")
+        .replace(" from ", ":")
+        .replace(" to ", ">");
+
+    for line in binding.lines() {
+        let (amount, indices) = line.split_once(":").unwrap();
+        let (from, to) = indices.split_once(">").unwrap();
+
+        let amount = amount.parse::<usize>().unwrap();
+        let from = from.parse::<usize>().unwrap();
+        let to = to.parse::<usize>().unwrap();
+
+        let mut temp = Vec::new();
+        for _ in 0..amount {
+            temp.push(stacks[from - 1].pop().unwrap());
+        }
+        for c in temp.into_iter().rev() {
+            stacks[to - 1].push(c);
+        }
+    }
+
+    println!(
+        "Day 5, part b: {}",
+        stacks.into_iter().fold(String::new(), |acc, stack| acc
+            + &stack.last().unwrap().to_string())
+    );
 }

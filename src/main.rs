@@ -1,6 +1,6 @@
 #![feature(exclusive_range_pattern)]
 
-use std::cmp::Ordering;
+use std::{cmp::Ordering, collections::HashSet};
 
 fn main() {
     day1_a();
@@ -13,6 +13,8 @@ fn main() {
     day4_b();
     day5_a();
     day5_b();
+    day6_a();
+    day6_b();
 }
 
 fn day1_a() {
@@ -458,4 +460,44 @@ fn day5_b() {
         stacks.into_iter().fold(String::new(), |acc, stack| acc
             + &stack.last().unwrap().to_string())
     );
+}
+
+fn day6_a() {
+    let input = include_str!("../input/day6.txt");
+
+    let mut total = String::new();
+    for (index, char) in input.chars().enumerate() {
+        total += &char.to_string();
+
+        if total.len() > 4 {
+            total = total[1..].to_string();
+        }
+        if total.chars().collect::<HashSet<char>>().len() != total.len() {
+            total = String::new();
+        }
+        if total.len() == 4 {
+            println!("Day 6, part a: {}", index);
+            break;
+        }
+    }
+}
+
+fn day6_b() {
+    let input = include_str!("../input/day6.txt");
+
+    let mut total = String::new();
+    for (index, char) in input.chars().enumerate() {
+        total += &char.to_string();
+
+        if total.len() > 14 {
+            total = total[1..].to_string();
+        }
+        if total.chars().collect::<HashSet<char>>().len() != total.len() {
+            total = String::new();
+        }
+        if total.len() == 14 {
+            println!("Day 6, part b: {}", index + 1);
+            break;
+        }
+    }
 }
